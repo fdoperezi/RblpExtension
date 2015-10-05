@@ -1,12 +1,10 @@
 #' Function getting a single data point
-#' @param tickers           character vector specifying the securities
-#' @param type              a character string specifying instrument type
-#'                          price point extraction
-#' @param fields            character vector specifying data fields
-#'                          price point extraction (see details)
-#' @param override_fields   character vector specifying override fields
-#' @param override_values   character vector specifying override values
-#' @autor Peter Garnry
+#' @param tickers A character vector specifying the securities
+#' @param type A character string specifying instrument type (optional)
+#' @param fields A character vector specifying data fields
+#' @param override.names character vector specifying override fields
+#' @param override.values character vector specifying override values
+#' @author Peter Garnry
 
 DataPoint <- function(tickers = "ADS GY", type = "Equity", fields = "PX_LAST",
                       option.names = NULL, option.values = NULL,
