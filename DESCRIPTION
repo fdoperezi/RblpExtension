@@ -4,7 +4,7 @@ Version: 0.0.1
 Date: 2015-10-06
 Maintainer: Peter Garnry <pg@saxobank.com> 
 Author: Peter Garnry
-Imports:
+Depends:
     Rblpapi
 Suggests:
     xts
