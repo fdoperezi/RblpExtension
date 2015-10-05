@@ -4,7 +4,10 @@ Version: 0.0.1
 Date: 2015-10-06
 Maintainer: Peter Garnry <pg@saxobank.com> 
 Author: Peter Garnry
-Imports: Rblpapi
+Imports:
+    Rblpapi
+Suggests:
+    xts
 License: GPL (>= 2)
 LazyData: true
 Description: R interface to extend the functionality of the Rblpapi package
