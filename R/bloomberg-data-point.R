@@ -4,11 +4,16 @@
 #' @param fields A character vector specifying data fields
 #' @param override.names character vector specifying override fields
 #' @param override.values character vector specifying override values
+#' @export
 #' @author Peter Garnry
 
-DataPoint <- function(tickers = "ADS GY", type = "Equity", fields = "PX_LAST",
-                      option.names = NULL, option.values = NULL,
-                      override.names = NULL, override.values = NULL) {
+bloomberg_data_point <- function(tickers = "ADS GY",
+                                 type = "Equity",
+                                 fields = "PX_LAST",
+                                 option.names = NULL,
+                                 option.values = NULL,
+                                 override.names = NULL,
+                                 override.values = NULL) {
   
   conn <- blpConnect()
   

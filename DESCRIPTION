@@ -2,13 +2,15 @@ Package: RblpExtension
 Title: Extends functionality of the Rblpapi package
 Version: 0.0.1
 Date: 2015-10-06
-Maintainer: Peter Garnry <pg@saxobank.com> 
+Maintainer: Peter Garnry <pg@saxobank.com>
 Author: Peter Garnry
 Depends:
+    Rblpapi,
+    zoo
+Imports:
     Rblpapi
-Suggests:
-    xts
 License: GPL (>= 2)
 LazyData: true
 Description: R interface to extend the functionality of the Rblpapi package
 SystemRequirements: A valid BBG installation
+RoxygenNote: 5.0.0
