@@ -17,8 +17,6 @@ bloomberg_data_point <- function(tickers = "ADS GY",
   
   blpConnect()  # connect to Bloomberg
   
-  if(is.null(type)) stop("Security type is missing")
-    
   tickers <- paste(tickers, type, sep = " ")
   
   if(!is.null(option.names) & !is.null(option.values)) {
