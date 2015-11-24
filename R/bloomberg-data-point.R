@@ -15,13 +15,11 @@ bloomberg_data_point <- function(tickers = "ADS GY",
                                  override.names = NULL,
                                  override.values = NULL) {
   
-  conn <- blpConnect()
+  blpConnect()  # connect to Bloomberg
   
-  if(!is.null(type)) {
+  if(is.null(type)) stop("Security type is missing")
     
-    tickers <- paste(tickers, type, sep = " ")
-    
-  }
+  tickers <- paste(tickers, type, sep = " ")
   
   if(!is.null(option.names) & !is.null(option.values)) {
     
@@ -48,10 +46,7 @@ bloomberg_data_point <- function(tickers = "ADS GY",
   bbg.data <- bdp(securities = tickers,
                   fields = fields,
                   options = options,
-                  overrides = overrides,
-                  con = conn)
-  
-  blpDisconnect(conn)
+                  overrides = overrides)
   
   return(bbg.data)
   
