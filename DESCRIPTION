@@ -6,7 +6,8 @@ Maintainer: Peter Garnry <pg@saxobank.com>
 Author: Peter Garnry
 Depends:
     Rblpapi,
-    zoo
+    xts,
+    stringr
 Imports:
 License: GPL (>= 2)
 LazyData: true
