@@ -7,29 +7,25 @@
 
 bloomberg_index_members <- function(index = "SPX") {
   
-  conn <- blpConnect()
+  blpConnect()
   
   index.count <- bdp(securities = paste(index, "Index"),
-                     fields = "COUNT_INDEX_MEMBERS",
-                     con = conn)
+                     fields = "COUNT_INDEX_MEMBERS")
   
   if(index.count <= 2500) {
     
     index.members <- bds(securities = paste(index, "Index"),
-                         fields = "INDX_MEMBERS",
-                         con = conn)
+                         fields = "INDX_MEMBERS")
     
   }
   
   if(index.count >= 2500 & index.count <= 5000) {
     
     index.members.1 <- bds(securities = paste(index, "Index"),
-                         fields = "INDX_MEMBERS",
-                         con = conn)
+                         fields = "INDX_MEMBERS")
     
     index.members.2 <- bds(securities = paste(index, "Index"),
-                           fields = "INDX_MEMBERS2",
-                           con = conn)
+                           fields = "INDX_MEMBERS2")
     
     index.members <- rbind(index.members.1, index.members.2)
     
@@ -38,23 +34,18 @@ bloomberg_index_members <- function(index = "SPX") {
   if(index.count > 5000) {
     
     index.members.1 <- bds(securities = paste(index, "Index"),
-                           fields = "INDX_MEMBERS",
-                           con = conn)
+                           fields = "INDX_MEMBERS")
     
     index.members.2 <- bds(securities = paste(index, "Index"),
-                           fields = "INDX_MEMBERS2",
-                           con = conn)
+                           fields = "INDX_MEMBERS2")
     
     index.members.3 <- bds(securities = paste(index, "Index"),
-                           fields = "INDX_MEMBERS3",
-                           con = conn)
+                           fields = "INDX_MEMBERS3")
     
     index.members <- rbind(index.members.1, index.members.2, index.members.3)
     
   }
   
-  blpDisconnect(conn)
-  
-  return(index.members[, ncol(index.members)])
+  return(index.members[, 1])
   
 }
