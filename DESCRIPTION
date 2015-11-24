@@ -8,7 +8,6 @@ Depends:
     Rblpapi,
     zoo
 Imports:
-    Rblpapi
 License: GPL (>= 2)
 LazyData: true
 Description: R interface to extend the functionality of the Rblpapi package
