@@ -82,6 +82,14 @@ bloomberg_historical_data <- function(tickers = "GS US",
                     overrides = bbg.overrides)
     
     # nested if statements to create date vector for later xts object creation
+    if(is.list(bbg.data)) {
+      
+      bbg.data <- do.call(rbind, bbg.data)
+      
+      # reminder! change rownames through regular expression
+      
+    }
+    
     if(freq == "MONTHLY") {
       
       dates <- unique(as.yearmon(as.Date(bbg.data[, "date"])))
@@ -100,9 +108,10 @@ bloomberg_historical_data <- function(tickers = "GS US",
     
     dates <- sort(dates)
     
-    # adjust Bloomberg raw output data for one ticker and one field
+    # adjust Bloomberg output data for one ticker and one field
     if(length(fields) == 1 & length(tickers) == 1) {
       
+      # create xts object based on Bloomberg data and date vector
       adj.data <- xts(as.matrix(bbg.data[, -which(names(bbg.data) == "date")],
                                 nrow = length(dates),
                                 ncol = length(fields)),
@@ -112,6 +121,7 @@ bloomberg_historical_data <- function(tickers = "GS US",
       
     }
     
+    # adjust Bloomberg output data for one ticker and multiple fields
     if(length(fields) > 1 & length(tickers) == 1) {
       
       adj.data <- xts(as.matrix(bbg.data[, -which(names(bbg.data) == "date")],
@@ -121,6 +131,7 @@ bloomberg_historical_data <- function(tickers = "GS US",
       
     }
     
+    # adjust Bloomberg output data for multiple tickers and one field
     if(length(fields) == 1 & length(tickers) > 1) {
       
       adj.data <- xts(matrix(NA,
