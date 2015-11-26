@@ -3,4 +3,5 @@
 export(bloomberg_data_point)
 export(bloomberg_earnings_estimates)
 export(bloomberg_historical_data)
+export(bloomberg_historical_index_members)
 export(bloomberg_index_members)
