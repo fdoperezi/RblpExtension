@@ -48,6 +48,10 @@ bloomberg_historical_data <- function(tickers = "GS US",
                      pricing,
                      currency)
   
+  start.date <- as.Date(start.date)
+  
+  if(end.date != "") end.date <- as.Date(end.date)
+  
   if(is.null(override.values) & is.null(override.fields)) {
     
     bbg.overrides <- NULL
@@ -76,7 +80,7 @@ bloomberg_historical_data <- function(tickers = "GS US",
     
     bbg.data <- bdh(securities = tickers.type,
                     fields = fields,
-                    start.date = as.Date(start.date),
+                    start.date = start.date,
                     end.date = end.date,
                     options = bbg.options,
                     overrides = bbg.overrides)
@@ -84,25 +88,29 @@ bloomberg_historical_data <- function(tickers = "GS US",
     # nested if statements to create date vector for later xts object creation
     if(is.list(bbg.data)) {
       
-      bbg.data <- do.call(rbind, bbg.data)
+      temp.data <- as.data.frame(rbindlist(bbg.data))
       
-      # reminder! change rownames through regular expression
+      bbg.dates <- temp.data$date
+      
+    } else {
+      
+      bbg.dates <- bbg.data$date
       
     }
     
     if(freq == "MONTHLY") {
       
-      dates <- unique(as.yearmon(as.Date(bbg.data[, "date"])))
+      dates <- unique(as.yearmon(bbg.dates))
       
     } else
       
       if(freq == "QUARTERLY") {
         
-        dates <- unique(as.yearqtr(as.Date(bbg.data[, "date"])))
+        dates <- unique(as.yearqtr(bbg.dates))
         
       } else {
         
-        dates <- as.Date(unique(bbg.data[, "date"]), format = "%Y-%m-%d")
+        dates <- unique(bbg.dates)
         
       }
     
@@ -142,21 +150,21 @@ bloomberg_historical_data <- function(tickers = "GS US",
       
       for(i in 1:length(tickers)) {
         
-        ticker.pos <- which(tickers.type[i] == bbg.data[, "ticker"])
+        nobs <- nrow(bbg.data[[i]])
         
-        if(freq == "MONTHLY" & length(ticker.pos) > 0) {
+        if(freq == "MONTHLY" & nobs > 0) {
           
-          ticker.dates <- as.yearmon(as.Date(bbg.data[ticker.pos, "date"]))
+          ticker.dates <- as.yearmon(bbg.data[[i]]$date)
           
         } else
           
-          if(freq == "QUARTERLY" & length(ticker.pos) > 0) {
+          if(freq == "QUARTERLY" & nobs > 0) {
             
-            ticker.dates <- as.yearqtr(as.Date(bbg.data[ticker.pos, "date"]))
+            ticker.dates <- as.yearqtr(bbg.data[[i]]$date)
             
           } else {
             
-            ticker.dates <- as.Date(bbg.data[ticker.pos, "date"])
+            ticker.dates <- bbg.data[[i]]$date
             
           }
         
@@ -164,63 +172,12 @@ bloomberg_historical_data <- function(tickers = "GS US",
         
         if(length(dates.match) > 0) {
           
-          adj.data[dates.match, i] <- as.numeric(bbg.data[ticker.pos, fields])
+          adj.data[dates.match, i] <- as.numeric(bbg.data[[i]][, fields])
           
           
         }
         
       }
-      
-      # special case for monthly data observations across active and
-      # inactive tickers. Answer from Bloomberg support:
-      # "Our programmers have indicated that at this time
-      #  we are unable to support a trading calendar for 
-      #  all acquired tickers, so the acquired tickers will 
-      #  not respect holidays. We apologize for any inconvenience."
-      
-      if(type == "Equity") {
-        
-        active.tickers <- bdp(conn = conn,
-                              securities = tickers.type,
-                              fields = "TRADE_STATUS")
-        
-        if(freq == "MONTHLY" & any(active.tickers[, "TRADE_STATUS"] == FALSE) |
-           freq == "QUARTERLY" & any(active.tickers[, "TRADE_STATUS"] == FALSE)) {
-          
-          inactive <- which(active.tickers[, "TRADE_STATUS"] == FALSE)
-          
-          adj.data[, inactive] <- na.locf(adj.data[, inactive],
-                                          maxgap = 2,
-                                          fromLast = TRUE)
-          
-          # find first active ticker
-          actv.pos <- which(active.tickers[, "TRADE_STATUS"] == TRUE)[1]
-          
-          ticker.pos <- which(bbg.data[, "ticker"] == tickers.type[actv.pos])
-          
-          if(freq == "MONTHLY") {
-            
-            actv.dates <- as.yearmon(as.Date(bbg.data[ticker.pos, "date"]))
-            
-          } else
-            
-            if(freq == "QUARTERLY") {
-              
-              dates <- as.yearqtr(as.Date(bbg.data[ticker.pos, "date"]))
-              
-            } else {
-              
-              dates <- as.Date(bbg.data[ticker.pos, "date"], format = "%Y-%m-%d")
-              
-            }
-          
-          true.dates <- match(actv.dates, dates)
-          
-          adj.data <- adj.data[true.dates,, ]
-          
-        }
-        
-      }      
       
     }
     
@@ -236,21 +193,21 @@ bloomberg_historical_data <- function(tickers = "GS US",
       
       for(i in 1:length(tickers)) {
         
-        ticker.pos <- which(tickers.type[i] == bbg.data[, "ticker"])
+        nobs <- nrow(bbg.data[[i]])
         
         if(freq == "MONTHLY" & length(ticker.pos) > 0) {
           
-          ticker.dates <- as.yearmon(as.Date(bbg.data[ticker.pos, "date"]))
+          ticker.dates <- as.yearmon(bbg.data[[i]]$date)
           
         } else
           
           if(freq == "QUARTERLY" & length(ticker.pos) > 0) {
             
-            ticker.dates <- as.yearqtr(as.Date(bbg.data[ticker.pos, "date"]))
+            ticker.dates <- as.yearqtr(bbg.data[[i]]$date)
             
           } else {
             
-            ticker.dates <- as.Date(bbg.data[ticker.pos, "date"])
+            ticker.dates <- bbg.data[[i]]$date
             
           }
         
@@ -258,67 +215,7 @@ bloomberg_historical_data <- function(tickers = "GS US",
         
         if(length(dates.match) > 0) {
           
-          temp.bbg <- bbg.data[ticker.pos, -1:-2]
-          
-          adj.data[dates.match, i, ] <- data.matrix(temp.bbg)
-          
-          
-        }
-        
-      }
-      
-      # special case for monthly data observations across active and
-      # inactive tickers. Answer from Bloomberg support:
-      # "Our programmers have indicated that at this time
-      #  we are unable to support a trading calendar for 
-      #  all acquired tickers, so the acquired tickers will 
-      #  not respect holidays. We apologize for any inconvenience."
-      
-      if(type == "Equity") {
-        
-        active.tickers <- bdp(conn = conn,
-                              securities = tickers.type,
-                              fields = "TRADE_STATUS")
-        
-        if(freq == "MONTHLY" & any(active.tickers[, "TRADE_STATUS"] == FALSE) |
-           freq == "QUARTERLY" & any(active.tickers[, "TRADE_STATUS"] == FALSE)) {
-          
-          inactive <- which(active.tickers[, "TRADE_STATUS"] == FALSE)
-          
-          for(i in 1:length(fields)) {
-            
-            temp.data <- xts(adj.data[, inactive, i], order.by = dates)
-            
-            adj.data[, inactive, i] <- na.locf(temp.data,
-                                               maxgap = 2,
-                                               fromLast = TRUE)
-            
-          }
-          
-          # find first active ticker
-          actv.pos <- which(active.tickers[, "TRADE_STATUS"] == TRUE)[1]
-          
-          ticker.pos <- which(bbg.data[, "ticker"] == tickers.type[actv.pos])
-          
-          if(freq == "MONTHLY") {
-            
-            actv.dates <- as.yearmon(as.Date(bbg.data[ticker.pos, "date"]))
-            
-          } else
-            
-            if(freq == "QUARTERLY") {
-              
-              dates <- as.yearqtr(as.Date(bbg.data[ticker.pos, "date"]))
-              
-            } else {
-              
-              dates <- as.Date(bbg.data[ticker.pos, "date"], format = "%Y-%m-%d")
-              
-            }
-          
-          true.dates <- match(actv.dates, dates)
-          
-          adj.data <- adj.data[true.dates,, ]
+          adj.data[dates.match, i, ] <- as.matrix(bbg.data[[i]][, fields])
           
         }
         
@@ -328,14 +225,14 @@ bloomberg_historical_data <- function(tickers = "GS US",
     
   }
   
+  # data handling if calendar.type variable is set to "FISCAL"
   if(calendar.type == "FISCAL") {
     
     adj.data <- vector("list", length(tickers))
     
     names(adj.data) <- tickers
     
-    primary.period <- bdp(conn = conn,
-                          securities = tickers.type,
+    primary.period <- bdp(securities = tickers.type,
                           fields = "PRIMARY_PERIODICITY")
     
     primary.period <- ifelse(str_detect(primary.period[, 1],
@@ -350,23 +247,18 @@ bloomberg_historical_data <- function(tickers = "GS US",
       
       period.sel.pos <- which(option.names == "periodicitySelection")
       
-      option.values[period.sel.pos] <- primary.period[i]
+      bbg.options[period.sel.pos] <- primary.period[i]
       
-      bbg.data <- bdh(conn = conn,
-                      securities = tickers.type[i],
+      bbg.data <- bdh(securities = tickers.type[i],
                       fields = fields,
-                      start_date = startdate,
-                      end_date = enddate,
-                      option_names = option.names,
-                      option_values = option.values,
-                      override_fields = override.fields,
-                      override_values = override.values)
+                      start.date = start.date,
+                      end.date = end.date,
+                      options = bbg.options,
+                      overrides = bbg.overrides)
       
-      if(nrow(bbg.data) > 0 & sum(duplicated(bbg.data[, 1])) == 0) {
+      if(nrow(bbg.data) > 0 & sum(duplicated(bbg.data$date)) == 0) {
         
-        dates <- as.Date(unique(bbg.data[, 1]), format = "%Y-%m-%d")
-        
-        stopifnot(class(dates) == "Date")
+        dates <- unique(bbg.data$date)
         
         col.nas <- apply(is.na(bbg.data), 2, sum)
         
@@ -378,7 +270,7 @@ bloomberg_historical_data <- function(tickers = "GS US",
           
         }
         
-        adj.data[[i]] <- xts(as.matrix(bbg.data[, 2:ncol(bbg.data)],
+        adj.data[[i]] <- xts(as.matrix(bbg.data[, fields],
                                        nrow = length(dates),
                                        ncol = ncol(bbg.data) - 1),
                              order.by = dates,
@@ -390,7 +282,7 @@ bloomberg_historical_data <- function(tickers = "GS US",
         
       } 
       
-    }
+    }  # end of tickers loop
     
   }
   
