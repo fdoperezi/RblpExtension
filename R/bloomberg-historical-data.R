@@ -86,7 +86,7 @@ bloomberg_historical_data <- function(tickers = "GS US",
                     overrides = bbg.overrides)
     
     # nested if statements to create date vector for later xts object creation
-    if(is.list(bbg.data)) {
+    if(length(tickers) > 1) {
       
       temp.data <- as.data.frame(rbindlist(bbg.data))
       
@@ -285,8 +285,6 @@ bloomberg_historical_data <- function(tickers = "GS US",
     }  # end of tickers loop
     
   }
-  
-  blpDisconnect(conn)
   
   return(adj.data)
   
