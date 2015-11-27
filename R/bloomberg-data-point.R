@@ -10,41 +10,41 @@
 bloomberg_data_point <- function(tickers = "ADS GY",
                                  type = "Equity",
                                  fields = "PX_LAST",
-                                 option.names = NULL,
+                                 option.fields = NULL,
                                  option.values = NULL,
-                                 override.names = NULL,
+                                 override.fields = NULL,
                                  override.values = NULL) {
   
   blpConnect()  # connect to Bloomberg
   
-  tickers <- paste(tickers, type, sep = " ")
+  tickers.type <- paste(tickers, type, sep = " ")
   
-  if(!is.null(option.names) & !is.null(option.values)) {
+  if(!is.null(option.fields) & !is.null(option.values)) {
     
-    options <- structure(option.values,
-                         names = option.names)
+    bbg.options <- structure(option.values,
+                             names = option.fields)
     
   } else {
     
-    options <- NULL
+    bbg.options <- NULL
     
   }
   
-  if(!is.null(override.names) & !is.null(override.values)) {
+  if(!is.null(override.fields) & !is.null(override.values)) {
     
-    overrides <- structure(override.values,
-                           names = override.names)
+    bbg.overrides <- structure(override.values,
+                               names = override.fields)
     
   } else {
     
-    overrides <- NULL
+    bbg.overrides <- NULL
     
   }
   
-  bbg.data <- bdp(securities = tickers,
+  bbg.data <- bdp(securities = tickers.type,
                   fields = fields,
-                  options = options,
-                  overrides = overrides)
+                  options = bbg.options,
+                  overrides = bbg.overrides)
   
   return(bbg.data)
   

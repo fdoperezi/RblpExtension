@@ -33,12 +33,12 @@ bloomberg_historical_data <- function(tickers = "GS US",
   # concatenate tickers and security type                
   tickers.type <- paste(tickers, type, sep = " ")
   
-  option.names <- c("periodicitySelection",
-                    "nonTradingDayFillOption",
-                    "nonTradingDayFillMethod",
-                    "periodicityAdjustment",
-                    "adjustmentFollowDPDF",
-                    "pricingOption")
+  option.fields <- c("periodicitySelection",
+                     "nonTradingDayFillOption",
+                     "nonTradingDayFillMethod",
+                     "periodicityAdjustment",
+                     "adjustmentFollowDPDF",
+                     "pricingOption")
   
   option.values <- c(freq,
                      non.trading.days,
@@ -66,12 +66,12 @@ bloomberg_historical_data <- function(tickers = "GS US",
   if(!is.null(currency)) {
     
     bbg.options <- structure(option.values,
-                             names = c(option.names, "currency"))
+                             names = c(option.fields, "currency"))
     
   } else {
     
     bbg.options <- structure(option.values,
-                             names = option.names)
+                             names = option.fields)
     
   }
   
@@ -245,7 +245,7 @@ bloomberg_historical_data <- function(tickers = "GS US",
     
     for(i in 1:length(tickers)) {
       
-      period.sel.pos <- which(option.names == "periodicitySelection")
+      period.sel.pos <- which(option.fields == "periodicitySelection")
       
       bbg.options[period.sel.pos] <- primary.period[i]
       

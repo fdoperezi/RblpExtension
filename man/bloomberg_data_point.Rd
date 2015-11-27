@@ -5,8 +5,8 @@
 \title{Function getting a single data point}
 \usage{
 bloomberg_data_point(tickers = "ADS GY", type = "Equity",
-  fields = "PX_LAST", option.names = NULL, option.values = NULL,
-  override.names = NULL, override.values = NULL)
+  fields = "PX_LAST", option.fields = NULL, option.values = NULL,
+  override.fields = NULL, override.values = NULL)
 }
 \arguments{
 \item{tickers}{A character vector specifying the securities}
@@ -15,9 +15,9 @@ bloomberg_data_point(tickers = "ADS GY", type = "Equity",
 
 \item{fields}{A character vector specifying data fields}
 
-\item{override.names}{character vector specifying override fields}
-
 \item{override.values}{character vector specifying override values}
+
+\item{override.names}{character vector specifying override fields}
 }
 \description{
 Function getting a single data point
