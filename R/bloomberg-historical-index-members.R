@@ -48,7 +48,7 @@ bloomberg_historical_index_members <- function(index = "SPX",
     
     cat(paste(dates[i]), "\n")
     
-    bbg.overrides <- structure(gsub("[[:punct:]]","",dates[i]),
+    bbg.overrides <- structure(gsub("[[:punct:]]","", dates[i]),
                                names = "END_DATE_OVERRIDE")
     
     bbg.data <- bds(securities = paste(index, "Index"),
@@ -58,9 +58,9 @@ bloomberg_historical_index_members <- function(index = "SPX",
     # this ensures that index members' ticker codes are converted to composite ticker codes or
     # ISIN values replace Bloomberg tickers
     field.data <- bdp(securities = paste(bbg.data[, "Index Member"], "Equity"),
-                      fields = field.df[, field])
+                      fields = field.df[, id])
     
-    if(field == "ticker") {
+    if(id == "ticker") {
       
       hist.index.tickers.temp[[i]] <- paste(substr(bbg.data$`Index Member`,
                                                    1,
@@ -70,7 +70,7 @@ bloomberg_historical_index_members <- function(index = "SPX",
       
     }
     
-    if(field == "isin") {
+    if(id == "isin") {
       
       hist.index.tickers.temp[[i]] <- field.data[, 1]
       
