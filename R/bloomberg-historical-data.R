@@ -59,19 +59,19 @@ bloomberg_historical_data <- function(tickers = "GS US",
   } else {
     
     bbg.overrides <- structure(override.values,
-                               names = override.values)
+                               names = override.fields)
     
   }
   
   if(!is.null(currency)) {
     
     bbg.options <- structure(option.values,
-                              names = c(option.names, "currency"))
+                             names = c(option.names, "currency"))
     
   } else {
     
     bbg.options <- structure(option.values,
-                         names = option.names)
+                             names = option.names)
     
   }
   
